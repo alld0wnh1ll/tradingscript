@@ -1,0 +1,56 @@
+from datetime import datetime, time
+from time import sleep
+import pandas as pd
+import robin_stocks as rs
+import pyotp
+
+
+#robinhood account information
+rs.login("username", "password")
+totp = pyotp.TOTP("My2factorAppHere").now()
+print("Current OTP:", totp)
+
+#choose your stocks
+stocks = ['F', 'KO', 'T']
+
+#dictionary for storing your stock volumes, in the loop, "i" will designate your keys as the stock name; if you want to print Ford; type print(dict1['F'])
+dict1 = {}
+
+while True:
+    for i in stocks:
+        print(i)
+        #this is because the more stocks you add in; the longer it is going to take to run through a cycle
+        sleep(5 /len(stocks))
+        #pull volume data from RobinHood
+        listA = str(rs.stocks.get_fundamentals(i, info=None))
+        #parsing data to pull out what I actually care about (Volume)
+        listA = listA.split(',')
+        result = float(listA[3].split(':')[1].replace("'", ""))
+        #analist is really a string, I place comma seperation to keep that data clean; then, I split it later in a list (Analysis List)
+        analist = str(result)
+        # print(analist)
+        try:
+            test = analist.split(',')
+            if len(test) == 1:
+                analist = analist + ", " + str(dict1[i])
+                dict1[i] = analist
+            else:
+                dict1[i] = analist
+        except Exception as e:
+            dict1[i] = analist
+
+        try:
+            #I turn my key values into a string so I can work with them; do not try working out of a dictionary (WASTE OF TIME; spent 4 hours; good luck if you go down that road)
+            string = dict1[i]
+            calclist = string.split(',')
+            #simple change calculation KEEP IN MIND!!! this is change in velocity; the other piece is on line 20; however many seconds you want to detect change; change it there.
+            #how many ever stocks you are scanning; take in account it adds 2 seconds on for each. sleep works with decimals.
+            print(((float(calclist[0]) - float(calclist[1])) / float(calclist[0])*100))
+        except Exception as e:
+            continue
+
+
+
+
+
+
