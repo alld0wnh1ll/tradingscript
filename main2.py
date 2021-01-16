@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from time import sleep
 import robin_stocks as rs
-from KO import Initialize
+from initializer import Initialize
 
 
 stocks = ['F','KO', 'T']
